@@ -19,6 +19,8 @@ class ReportView(FlaskView):
 
         if result.rowcount == 0:
             return abort(403)
+        elif result.rowcount > 1:
+            return abort(500)  # wtf? this must indicate a broken unique key constraint
 
         db.session.commit()
         return Response(status=201)

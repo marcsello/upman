@@ -9,7 +9,7 @@ class Reporter(db.Model):
 
     created = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now())
 
-    key = db.Column(db.String(512), nullable=False)
+    key = db.Column(db.String(512), unique=True, nullable=False)
 
     info_digest = db.Column(db.String(32), nullable=True, default=None)
     last_seen = db.Column(db.DateTime(timezone=True), nullable=True, default=None)
