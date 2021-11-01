@@ -6,12 +6,21 @@ from utils import json_required
 from marshmallow import ValidationError
 
 from schemas import ReportSchema
+from sqlalchemy import func, update
+from model import db, Reporter
 
 
 class ReportView(FlaskView):
     report_schema = ReportSchema(many=False)
 
     def _make_report(self, key: str, info_digest: str) -> Response:
+        stmt = (update(Reporter).where(Reporter.key == key).values(last_seen=func.now(), info_digest=info_digest))
+        result = db.session.execute(stmt)
+
+        if result.rowcount == 0:
+            return abort(403)
+
+        db.session.commit()
         return Response(status=201)
 
     @route("/<key>/<info_digest>")
