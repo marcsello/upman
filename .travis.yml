@@ -1,0 +1,27 @@
+# Test, and upload to docker hub
+language: python
+dist: bionic
+python:
+  - "3.9"
+
+services:
+  - docker
+
+script:
+  - pip3 install -r requirements.txt
+#  - pip3 install -r requirements-dev.txt
+#  - pytest
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t $DOCKER_USERNAME/upman:$TRAVIS_BUILD_NUMBER .
+  - docker tag $DOCKER_USERNAME/upman:$TRAVIS_BUILD_NUMBER $DOCKER_USERNAME/upman:latest
+  - docker push $DOCKER_USERNAME/upman # push all tags
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: sleep 15; curl --silent "$WEBHOOKURL" # This needs to be a single command apparently
+  on:
+    push: true
+    branch: master
