@@ -33,10 +33,6 @@ def create_app(config_object=None) -> Flask:
     db.init_app(app)
     CORS(app)
 
-    @app.before_first_request
-    def initial_setup():
-        db.create_all()
-
     # register error handlers
     register_all_error_handlers(app)
 
